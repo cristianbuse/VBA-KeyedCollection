@@ -137,7 +137,8 @@ End Sub
 'Raises Error:
 '   -   5: both 'before_' and 'after_' were specified
 '          or one of them is an invalid key
-'   -   9: invalid index was specified for 'before_' or 'after_'
+'          or one of them is an invalid index (while collection has no elements)
+'   -   9: 'before_' or 'after_' invalid index (while collection has elements)
 '   -  13: invalid data type for 'before_' or 'after_'
 '   - 457: a duplicated key was specified
 'Note that the trailing underscores (parameter names) are meant to prevent the
@@ -180,7 +181,8 @@ End Function
 'Get Item by index or key
 'Raises Error:
 '   -   5: invalid key (key is not associated with any element)
-'   -   9: invalid index
+'          or invalid index (while collection has no elements)
+'   -   9: invalid index (while collection has elements)
 '   -  13: invalid data type for 'indexOrKey'
 'Default Class Member. KeyedCollection.Item(i) same as KeyedCollection(i)
 'Open class in a text editor to see: Attribute Item.VB_UserMemId = 0
@@ -196,10 +198,11 @@ Attribute Item.VB_UserMemId = 0
     End If
 End Property
 '===============================================================================
-'Let/Set Item by index or key
+'Let Item by index or key
 'Raises Error:
 '   -    5: invalid key (key is not associated with any element)
-'   -    9: invalid index
+'           or invalid index (while collection has no elements)
+'   -    9: invalid index (while collection has elements)
 '   -   13: invalid data type for 'indexOrKey'
 '   -  450: 'Set' is missing when assigning an object
 'Note that only the Items Collection is updated
@@ -210,6 +213,15 @@ Public Property Let Item(ByVal indexOrKey As Variant, ByVal item_ As Variant)
     End If
     UpdateItem indexOrKey, item_
 End Property
+'===============================================================================
+'Set Item by index or key
+'Raises Error:
+'   -   5: invalid key (key is not associated with any element)
+'          or invalid index (while collection has no elements)
+'   -   9: invalid index (while collection has elements)
+'   -  13: invalid data type for 'indexOrKey'
+'Note that only the Items Collection is updated
+'===============================================================================
 Public Property Set Item(ByVal indexOrKey As Variant, ByVal item_ As Object)
     UpdateItem indexOrKey, item_
 End Property
@@ -285,7 +297,8 @@ End Function
 '*******************************************************************************
 'Returns a key by it's index position
 'Raises Error:
-'   -   9: invalid index
+'   -   5: invalid index (while collection has no elements)
+'   -   9: invalid index (while collection has elements)
 '*******************************************************************************
 Public Function GetKeyAtIndex(ByVal index_ As Long) As String
     GetKeyAtIndex = m_collKeys(index_)
@@ -311,7 +324,7 @@ End Property
 
 '*******************************************************************************
 'Returns a 1-Dimensional Array of String Keys
-'Variant() is used instead of String() for flexibility
+'Variant() is returned instead of String() for flexibility of use
 '*******************************************************************************
 Public Function Keys() As Variant()
     If m_collKeys.Count = 0 Then
@@ -378,10 +391,11 @@ End Function
 'Remove item
 'Raises Error:
 '   -   5: invalid key (key is not associated with any element)
-'   -   9: invalid index
+'          or invalid index (while collection has no elements)
+'   -   9: invalid index (while collection has elements)
 '   -  13: invalid data type for 'indexOrKey'
 '*******************************************************************************
-Public Sub Remove(indexOrKey As Variant)
+Public Sub Remove(ByVal indexOrKey As Variant)
     m_collItems.Remove indexOrKey
     m_collKeys.Remove indexOrKey
 End Sub
