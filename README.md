@@ -98,6 +98,7 @@ End Sub
 
 ## Notes
 * The ```EnumHelper``` class helps with avoiding a [x64 bug](https://stackoverflow.com/questions/63848617/bug-with-for-each-enumeration-on-x64-custom-classes) but also allows the iteration of both keys and items using a ```For Each...``` loop on the ```.KeysEnum``` and ```.ItemsEnum``` methods.
+* Tests in the ```TestKeyedCollection``` module can be run using [Rubberduck](https://rubberduckvba.com/) COM add-in, from the "Test Explorer" window.
 
 ## License
 MIT License
