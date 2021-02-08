@@ -407,3 +407,10 @@ Public Sub RemoveAll()
     Set m_collItems = New Collection
     Set m_collKeys = New Collection
 End Sub
+
+'*******************************************************************************
+'Get self instance. Useful in 'With New KeyedCollection' blocks
+'*******************************************************************************
+Public Function Self() As KeyedCollection
+    Set Self = Me
+End Function
