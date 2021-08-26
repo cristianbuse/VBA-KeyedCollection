@@ -9,29 +9,30 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '''=============================================================================
 ''' VBA KeyedCollection
-'''----------------------------------------------------
+''' ---------------------------------------------------
 ''' https://github.com/cristianbuse/VBA-KeyedCollection
-'''----------------------------------------------------
+''' ---------------------------------------------------
+''' MIT License
 '''
-''' Copyright (C) 2017 Cristian Buse
+''' Copyright (c) 2017 Ion Cristian Buse
 '''
 ''' Permission is hereby granted, free of charge, to any person obtaining a copy
-''' of this software and associated documentation files (the "Software"), to deal
-''' in the Software without restriction, including without limitation the rights
-''' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-''' copies of the Software, and to permit persons to whom the Software is
+''' of this software and associated documentation files (the "Software"), to
+''' deal in the Software without restriction, including without limitation the
+''' rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+''' sell copies of the Software, and to permit persons to whom the Software is
 ''' furnished to do so, subject to the following conditions:
 '''
-''' The above copyright notice and this permission notice shall be included in all
-''' copies or substantial portions of the Software.
+''' The above copyright notice and this permission notice shall be included in
+''' all copies or substantial portions of the Software.
 '''
 ''' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ''' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ''' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 ''' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-''' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-''' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-''' SOFTWARE.
+''' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+''' FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+''' IN THE SOFTWARE.
 '''=============================================================================
 
 ''==============================================================================
@@ -145,9 +146,10 @@ End Sub
 '   IDE to automatically change letter casing if a variable/function with the
 '   same name is declared somewhere else in the project
 '*******************************************************************************
-Public Sub Add(ByVal key_ As String, ByVal item_ As Variant _
-    , Optional ByVal before_ As Variant, Optional ByVal after_ As Variant _
-)
+Public Sub Add(ByVal key_ As String _
+             , ByVal item_ As Variant _
+             , Optional ByVal before_ As Variant _
+             , Optional ByVal after_ As Variant)
     m_collItems.Add item_, key_, before_, after_
     m_collKeys.Add key_, key_, before_, after_
 End Sub
@@ -185,17 +187,15 @@ End Function
 '   -   9: invalid index (while collection has elements)
 '   -  13: invalid data type for 'indexOrKey'
 'Default Class Member. KeyedCollection.Item(i) same as KeyedCollection(i)
-'Open class in a text editor to see: Attribute Item.VB_UserMemId = 0
 '===============================================================================
+'@DefaultMember
 Public Property Get Item(ByVal indexOrKey As Variant) As Variant
 Attribute Item.VB_UserMemId = 0
-    If VBA.IsObject(m_collItems(indexOrKey)) Then
-        Set Item = m_collItems(indexOrKey)
-    ElseIf VBA.VarType(m_collItems(indexOrKey)) = vbDataObject Then
-        Set Item = m_collItems(indexOrKey)
-    Else
-        Item = m_collItems(indexOrKey)
-    End If
+'Attribute Item.VB_UserMemId = 0
+    LetSet(Item) = m_collItems(indexOrKey) 'Avoids extra check for vbDataObject
+End Property
+Private Property Let LetSet(ByRef result As Variant, ByRef v As Variant)
+    If IsObject(v) Then Set result = v Else result = v
 End Property
 '===============================================================================
 'Let Item by index or key
@@ -273,8 +273,7 @@ Public Function Items() As Variant()
     Dim i As Long: i = 0
     '
     'A Variant variable of type VbVarType.vbDataObject does NOT need 'Set' when
-    '   assigned from one Variant variable to another but it does need it when
-    '   returned from methods or properties (see <Get> Item property)
+    '   assigned from one Variant variable to another
     For Each v In m_collItems
         If VBA.IsObject(v) Then Set arr(i) = v Else arr(i) = v
         i = i + 1
@@ -360,7 +359,7 @@ End Function
 'Note that using 2 For Each... loops is about 15x faster than using just one on
 '   the Keys collection and then retreiving each item by key from the Items
 '   collection. The latter would also require an extra check for vbDataObject
-'   for the items (see <Get> Item property)
+'   for the items or the use of LetSet
 '*******************************************************************************
 Public Function KeyItemPairs() As Variant()
     If m_collKeys.Count = 0 Then
