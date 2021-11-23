@@ -86,7 +86,7 @@ Attribute VB_Exposed = False
 ''         - Enhancement over a regular Collection
 ''    * ItemsEnum
 ''         - Allows iteration of items with:
-''           For Each item_ In keyedCollection.ItemsEnum
+''           For Each itemValue In keyedCollection.ItemsEnum
 ''         - Avoids bug on x64. Link available in method header
 ''    * Key <Let>
 ''         - Allows a key value to be changed (as in Dictionary)
@@ -101,7 +101,7 @@ Attribute VB_Exposed = False
 ''         - Enhancement over a regular Collection
 ''    * KeysEnum
 ''         - Allows iteration of keys with:
-''           For Each key_ In keyedCollection.KeysEnum
+''           For Each keyValue In keyedCollection.KeysEnum
 ''         - Avoids bug on x64. Link available in method header
 ''    * Remove
 ''         - Removes an item by index or key (as in Collection)
@@ -136,22 +136,19 @@ End Sub
 '*******************************************************************************
 'Adds a Value or Object to Collection
 'Raises Error:
-'   -   5: both 'before_' and 'after_' were specified
+'   -   5: both 'beforeIndex' and 'afterIndex' were specified
 '          or one of them is an invalid key
 '          or one of them is an invalid index (while collection has no elements)
-'   -   9: 'before_' or 'after_' invalid index (while collection has elements)
-'   -  13: invalid data type for 'before_' or 'after_'
+'   -   9: 'beforeIndex' or 'afterIndex' invalid (while collection has elements)
+'   -  13: invalid data type for 'beforeIndex' or 'afterIndex'
 '   - 457: a duplicated key was specified
-'Note that the trailing underscores (parameter names) are meant to prevent the
-'   IDE to automatically change letter casing if a variable/function with the
-'   same name is declared somewhere else in the project
 '*******************************************************************************
-Public Sub Add(ByVal key_ As String _
-             , ByVal item_ As Variant _
-             , Optional ByVal before_ As Variant _
-             , Optional ByVal after_ As Variant)
-    m_collItems.Add item_, key_, before_, after_
-    m_collKeys.Add key_, key_, before_, after_
+Public Sub Add(ByVal keyValue As String _
+             , ByVal itemValue As Variant _
+             , Optional ByVal beforeIndex As Variant _
+             , Optional ByVal afterIndex As Variant)
+    m_collItems.Add itemValue, keyValue, beforeIndex, afterIndex
+    m_collKeys.Add keyValue, keyValue, beforeIndex, afterIndex
 End Sub
 
 '===============================================================================
@@ -172,9 +169,9 @@ End Property
 'Checks if a Key exists. Does not raise errors
 'Note that keys are case insensitive
 '*******************************************************************************
-Public Function Exists(ByVal key_ As String) As Boolean
+Public Function Exists(ByVal keyValue As String) As Boolean
     On Error Resume Next
-    m_collKeys.Item key_
+    m_collKeys.Item keyValue
     Exists = (Err.Number = 0)
     On Error GoTo 0
 End Function
@@ -207,11 +204,11 @@ End Property
 '   -  450: 'Set' is missing when assigning an object
 'Note that only the Items Collection is updated
 '===============================================================================
-Public Property Let Item(ByVal indexOrKey As Variant, ByVal item_ As Variant)
-    If VBA.IsObject(item_) Then
+Public Property Let Item(ByVal indexOrKey As Variant, ByVal itemValue As Variant)
+    If VBA.IsObject(itemValue) Then
         Err.Raise 450, TypeName(Me) & ".Item", "Invalid property assignment"
     End If
-    UpdateItem indexOrKey, item_
+    UpdateItem indexOrKey, itemValue
 End Property
 '===============================================================================
 'Set Item by index or key
@@ -222,27 +219,27 @@ End Property
 '   -  13: invalid data type for 'indexOrKey'
 'Note that only the Items Collection is updated
 '===============================================================================
-Public Property Set Item(ByVal indexOrKey As Variant, ByVal item_ As Object)
-    UpdateItem indexOrKey, item_
+Public Property Set Item(ByVal indexOrKey As Variant, ByVal itemValue As Object)
+    UpdateItem indexOrKey, itemValue
 End Property
 
 '*******************************************************************************
 'Utility for Item property <Let> and <Set>
 '*******************************************************************************
-Private Sub UpdateItem(ByVal indexOrKey As Variant, ByVal item_ As Variant)
-    Dim key_ As String
+Private Sub UpdateItem(ByVal indexOrKey As Variant, ByVal itemValue As Variant)
+    Dim keyValue As String
     Dim tempKey As String
     '
     'Get Key
-    key_ = m_collKeys(indexOrKey)
+    keyValue = m_collKeys(indexOrKey)
     'Generate random temporary key
     tempKey = RandomKey()
-    'Add tempKey after key_ to preserve the position
-    m_collItems.Add Empty, tempKey, , key_
+    'Add tempKey after keyValue to preserve the position
+    m_collItems.Add Empty, tempKey, , keyValue
     'Remove old item
-    m_collItems.Remove key_
+    m_collItems.Remove keyValue
     'Insert new item after the tempKey
-    m_collItems.Add item_, key_, , tempKey
+    m_collItems.Add itemValue, keyValue, , tempKey
     'Remove tempKey
     m_collItems.Remove tempKey
 End Sub
@@ -268,9 +265,9 @@ Public Function Items() As Variant()
         Exit Function
     End If
     '
-    Dim arr() As Variant: ReDim arr(0 To m_collItems.Count - 1)
+    Dim arr() As Variant: ReDim arr(1 To m_collItems.Count)
     Dim v As Variant
-    Dim i As Long: i = 0
+    Dim i As Long: i = 1
     '
     'A Variant variable of type VbVarType.vbDataObject does NOT need 'Set' when
     '   assigned from one Variant variable to another
@@ -299,8 +296,8 @@ End Function
 '   -   5: invalid index (while collection has no elements)
 '   -   9: invalid index (while collection has elements)
 '*******************************************************************************
-Public Function GetKeyAtIndex(ByVal index_ As Long) As String
-    GetKeyAtIndex = m_collKeys(index_)
+Public Function GetKeyAtIndex(ByVal indexValue As Long) As String
+    GetKeyAtIndex = m_collKeys(indexValue)
 End Function
 
 '===============================================================================
@@ -331,9 +328,9 @@ Public Function Keys() As Variant()
         Exit Function
     End If
     '
-    Dim arr() As Variant: ReDim arr(0 To m_collKeys.Count - 1)
+    Dim arr() As Variant: ReDim arr(1 To m_collKeys.Count)
     Dim v As Variant
-    Dim i As Long: i = 0
+    Dim i As Long: i = 1
     '
     For Each v In m_collKeys
         arr(i) = v
@@ -371,15 +368,15 @@ Public Function KeyItemPairs() As Variant()
     Dim i As Long
     Dim v As Variant
     '
-    ReDim arrPairs(0 To m_collKeys.Count - 1, 0 To 1)
-    i = 0
+    ReDim arrPairs(1 To m_collKeys.Count, 1 To 2)
+    i = 1
     For Each v In m_collKeys
-        arrPairs(i, 0) = v
+        arrPairs(i, 1) = v
         i = i + 1
     Next v
-    i = 0
+    i = 1
     For Each v In m_collItems
-        If VBA.IsObject(v) Then Set arrPairs(i, 1) = v Else arrPairs(i, 1) = v
+        If VBA.IsObject(v) Then Set arrPairs(i, 2) = v Else arrPairs(i, 2) = v
         i = i + 1
     Next v
     '
@@ -403,8 +400,10 @@ End Sub
 'Remove all items
 '*******************************************************************************
 Public Sub RemoveAll()
-    Set m_collItems = New Collection
-    Set m_collKeys = New Collection
+    If m_collItems.Count > 0 Then
+        Set m_collItems = New Collection
+        Set m_collKeys = New Collection
+    End If
 End Sub
 
 '*******************************************************************************

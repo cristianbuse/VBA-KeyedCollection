@@ -498,7 +498,7 @@ Private Sub TestItems()
     'Assert:
     Assert.IsTrue UBound(arr) - LBound(arr) + 1 = c.Count
     For i = LBound(arr) To UBound(arr)
-        Assert.IsTrue arr(i) = i + 1
+        Assert.IsTrue arr(i) = i
     Next i
 TestExit:
     Exit Sub
@@ -692,7 +692,7 @@ Private Sub TestKeys()
     'Assert:
     Assert.IsTrue UBound(arr) - LBound(arr) + 1 = c.Count
     For i = LBound(arr) To UBound(arr)
-        Assert.IsTrue arr(i) = CStr(i + 1)
+        Assert.IsTrue arr(i) = CStr(i)
     Next i
 TestExit:
     Exit Sub
@@ -755,8 +755,8 @@ Private Sub KeyItemPairs()
     Assert.IsTrue UBound(arr, 1) - LBound(arr, 1) + 1 = c.Count
     Assert.IsTrue UBound(arr, 2) - LBound(arr, 2) + 1 = 2
     For i = LBound(arr, 1) To UBound(arr, 1)
-        Assert.IsTrue arr(i, 0) = CStr(i + 1)
-        Assert.IsTrue arr(i, 1) = i + 1
+        Assert.IsTrue arr(i, 1) = CStr(i)
+        Assert.IsTrue arr(i, 2) = i
     Next i
 TestExit:
     Exit Sub

@@ -12,8 +12,8 @@ Public Sub DemoMain()
     c.Add "key4", "item4"
     
     'Add After/Before position or key
-    c.Add key_:="key2", item_:="item2", after_:=1
-    c.Add key_:="key3", item_:="item3", before_:="key4"
+    c.Add keyValue:="key2", itemValue:="item2", afterIndex:=1
+    c.Add keyValue:="key3", itemValue:="item3", beforeIndex:="key4"
     
     'Count
     Debug.Print "Keyed Collection has " & c.Count & " key-value pairs"
