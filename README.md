@@ -1,3 +1,5 @@
+## This repository is no longer maintained. [VBA-FastDictionary](https://github.com/cristianbuse/VBA-FastDictionary) is a much better alternative.
+
 # VBA-KeyedCollection
 
 An enhanced version of a classic VBA.Collection, Keyed Collection is a combination of functionality found in a regular VBA.Collection and a Scripting.Dictionary plus some extra utilities. It uses 2 syncronized internal collections in order to achieve the functionality (one for items and one for keys). 
